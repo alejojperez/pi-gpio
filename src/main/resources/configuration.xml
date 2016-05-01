@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system>
+        <GPIO>
+            <pin>
+                <placeholder>${PIN_NUMBER}$</placeholder>
+                <paths>
+                    <direction>/sys/class/gpio/gpio${PIN_NUMBER}$/direction</direction>
+                    <export>/sys/class/gpio/export</export>
+                    <unexport>/sys/class/gpio/unexport</unexport>
+                    <value>/sys/class/gpio/gpio${PIN_NUMBER}$/value</value>
+                    <!--<direction>/Users/Alejandro/Desktop/direction${PIN_NUMBER}$.txt</direction>-->
+                    <!--<export>/Users/Alejandro/Desktop/export.txt</export>-->
+                    <!--<unexport>/Users/Alejandro/Desktop/unexport.txt</unexport>-->
+                    <!--<value>/Users/Alejandro/Desktop/value${PIN_NUMBER}$.txt</value>-->
+                </paths>
+            </pin>
+        </GPIO>
+    </system>
+</configuration>

@@ -1,46 +1,15 @@
-<center>
-<h1>pi-gpio</h1>
-<h4 style="margin-bottom: 60px">A package to control the gpio pins in a raspberry pi.</h4>
-</center>
+/**
+ * Created by Alejandro Perez on 04/28/2016
+ * github page: https://github.com/alejojperez
+ */
+package com.alejojperez.pi_gpio.Core;
 
-<center>
-<h3>Use Example</h3>
-</center>
+import com.alejojperez.pi_gpio.Core.Contracts.IFileLogger;
+import com.alejojperez.pi_gpio.Core.Contracts.IGPIOController;
+import com.alejojperez.pi_gpio.Core.Implementations.FileLogger;
+import com.alejojperez.pi_gpio.Core.Implementations.GPIOController;
+import com.alejojperez.pi_gpio.Core.Implementations.Pin;
 
-<h5>Using a single pin</h5>
-
-```java
-public class Main
-{
-    public static void main(String[] args)
-    {
-        Pin pin;
-        IFileLogger logger = new FileLogger();
-
-        try {
-            pin = new Pin(11);
-            pin.registerLogger(logger);
-
-            pin.initialize();
-            pin.setDirection(Pin.GPIO_OUT);
-            pin.setValue(Pin.GPIO_ON);
-
-            Thread.sleep(3000);
-
-            pin.setValue(Pin.GPIO_OFF);
-            pin.destroy();
-
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-<hr/>
-<h5>Using the pins controller</h5>
-
-```java
 public class Main
 {
     public static void main(String[] args)
@@ -72,10 +41,3 @@ public class Main
         }
     }
 }
-```
-
-<center style="text-aling: center">
-    <h3 style="margin-bottom: 0;">Apache License</h3>
-    Version 2.0, January 2004<br/>
-    http://www.apache.org/licenses
-</center>

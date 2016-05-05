@@ -119,10 +119,23 @@ public class GPIOController implements IGPIOController, ICanLog
      */
     public IGPIOController deletePin(String alias)
     {
-        if(this.pins.containsKey(alias))
+        if(this.pins.containsKey(alias)) {
+            // Destroy the pin
+            this.pins.get(alias).destroy();
+
+            // Remove the pin from the list
             this.pins.remove(alias);
+        }
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void finalize()
+    {
+        this.flushPins();
     }
 
     /**

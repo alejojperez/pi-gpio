@@ -10,7 +10,6 @@ import com.alejojperez.pi_gpio.Core.Contracts.IPin;
 import com.alejojperez.pi_gpio.Core.Utils;
 
 import javax.xml.xpath.XPathConstants;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 

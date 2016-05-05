@@ -49,6 +49,13 @@ public interface IGPIOController
     IGPIOController deletePin(String alias);
 
     /**
+     * This method is called by the JVE Garbage Collector when is going
+     * dispose the object, so at this moment call flush pins to make sure
+     * that all the pins are reset
+     */
+    void finalize();
+
+    /**
      * Remove all the pins
      *
      * @return

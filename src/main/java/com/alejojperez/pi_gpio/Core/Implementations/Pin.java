@@ -4,7 +4,6 @@
  */
 package com.alejojperez.pi_gpio.Core.Implementations;
 
-import com.alejojperez.pi_gpio.Core.Contracts.ICanLog;
 import com.alejojperez.pi_gpio.Core.Contracts.ILogger;
 import com.alejojperez.pi_gpio.Core.Contracts.IPin;
 import com.alejojperez.pi_gpio.Core.Utils;
@@ -13,7 +12,7 @@ import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.io.FileWriter;
 
-public class Pin implements IPin, ICanLog
+public class Pin implements IPin
 {
     public static final String GPIO_OUT = "out";
     public static final String GPIO_IN = "in";

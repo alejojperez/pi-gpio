@@ -4,7 +4,7 @@
  */
 package com.alejojperez.pi_gpio.Core.Contracts;
 
-public interface IPin
+public interface IPin extends ICanLog
 {
     /**
      * Export the pin on the system
@@ -19,6 +19,11 @@ public interface IPin
      * @return IPin
      */
     IPin destroy();
+
+    /**
+     * @inheritdoc
+     */
+    IPin registerLogger(ILogger logger);
 
     /**
      * Set the direction of the pin: "in" or "out"

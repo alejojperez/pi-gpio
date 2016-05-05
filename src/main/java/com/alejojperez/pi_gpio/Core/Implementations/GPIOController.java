@@ -4,7 +4,6 @@
  */
 package com.alejojperez.pi_gpio.Core.Implementations;
 
-import com.alejojperez.pi_gpio.Core.Contracts.ICanLog;
 import com.alejojperez.pi_gpio.Core.Contracts.IGPIOController;
 import com.alejojperez.pi_gpio.Core.Contracts.ILogger;
 import com.alejojperez.pi_gpio.Core.Contracts.IPin;
@@ -14,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-public class GPIOController implements IGPIOController, ICanLog
+public class GPIOController implements IGPIOController
 {
     /**
      * Class instance: using singleton design pattern
@@ -146,6 +145,14 @@ public class GPIOController implements IGPIOController, ICanLog
         this.pins.forEach((alias, pinNumber) -> this.deletePin(alias));
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public IPin get(String alias)
+    {
+        return this.pins.get(alias);
     }
 
     /**

@@ -6,7 +6,7 @@ package com.alejojperez.pi_gpio.Core.Contracts;
 
 import java.util.HashMap;
 
-public interface IGPIOController
+public interface IGPIOController extends ICanLog
 {
     /**
      * Adds a new pin to the collection, if it is not
@@ -61,4 +61,12 @@ public interface IGPIOController
      * @return
      */
     IGPIOController flushPins();
+
+    /**
+     * Get a pin by the alias
+     *
+     * @param alias
+     * @return
+     */
+    IPin get(String alias);
 }

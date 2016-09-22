@@ -2,12 +2,12 @@
  * Created by Alejandro Perez on 04/28/2016
  * github page: https://github.com/alejojperez
  */
-package com.alejojperez.pi_gpio.Core.Implementations;
+package com.alejojperez.pi_gpio.core.implementations;
 
-import com.alejojperez.pi_gpio.Core.Contracts.IGPIOController;
-import com.alejojperez.pi_gpio.Core.Contracts.ILogger;
-import com.alejojperez.pi_gpio.Core.Contracts.IPin;
-import com.alejojperez.pi_gpio.Core.Utils;
+import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
+import com.alejojperez.pi_gpio.core.contracts.ILogger;
+import com.alejojperez.pi_gpio.core.contracts.IPin;
+import com.alejojperez.pi_gpio.core.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

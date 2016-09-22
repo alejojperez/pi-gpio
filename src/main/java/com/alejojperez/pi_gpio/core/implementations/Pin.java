@@ -2,11 +2,11 @@
  * Created by Alejandro Perez on 4/28/16
  * github page: https://github.com/alejojperez
  */
-package com.alejojperez.pi_gpio.Core.Implementations;
+package com.alejojperez.pi_gpio.core.implementations;
 
-import com.alejojperez.pi_gpio.Core.Contracts.ILogger;
-import com.alejojperez.pi_gpio.Core.Contracts.IPin;
-import com.alejojperez.pi_gpio.Core.Utils;
+import com.alejojperez.pi_gpio.core.contracts.ILogger;
+import com.alejojperez.pi_gpio.core.contracts.IPin;
+import com.alejojperez.pi_gpio.core.Utils;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.File;

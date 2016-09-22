@@ -2,7 +2,7 @@
  * Created by Alejandro Perez on 04/28/2016
  * github page: https://github.com/alejojperez
  */
-package com.alejojperez.pi_gpio.Core.Contracts;
+package com.alejojperez.pi_gpio.core.contracts;
 
 public interface IPin extends ICanLog
 {

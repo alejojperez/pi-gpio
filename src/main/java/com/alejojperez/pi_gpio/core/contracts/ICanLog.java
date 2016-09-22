@@ -2,7 +2,7 @@
  * Created by Alejandro Perez on 4/30/16
  * github page: https://github.com/alejojperez
  */
-package com.alejojperez.pi_gpio.Core.Contracts;
+package com.alejojperez.pi_gpio.core.contracts;
 
 public interface ICanLog
 {

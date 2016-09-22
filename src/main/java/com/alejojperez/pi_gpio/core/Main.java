@@ -2,13 +2,13 @@
  * Created by Alejandro Perez on 04/28/2016
  * github page: https://github.com/alejojperez
  */
-package com.alejojperez.pi_gpio.Core;
+package com.alejojperez.pi_gpio.core;
 
-import com.alejojperez.pi_gpio.Core.Contracts.IFileLogger;
-import com.alejojperez.pi_gpio.Core.Contracts.IGPIOController;
-import com.alejojperez.pi_gpio.Core.Implementations.FileLogger;
-import com.alejojperez.pi_gpio.Core.Implementations.GPIOController;
-import com.alejojperez.pi_gpio.Core.Implementations.Pin;
+import com.alejojperez.pi_gpio.core.contracts.IFileLogger;
+import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
+import com.alejojperez.pi_gpio.core.implementations.FileLogger;
+import com.alejojperez.pi_gpio.core.implementations.GPIOController;
+import com.alejojperez.pi_gpio.core.implementations.Pin;
 
 public class Main
 {

@@ -102,6 +102,14 @@ public class Pin implements IPin
     /**
      * @inheritdoc
      */
+    public boolean isInitialized()
+    {
+        return this.initialized;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public IPin destroy()
     {
         String strPin = Integer.toString(this.pin);

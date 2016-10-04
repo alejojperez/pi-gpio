@@ -14,6 +14,13 @@ public interface IPin extends ICanLog
     IPin initialize();
 
     /**
+     * Whether the pin is initialized or not
+     *
+     * @return
+     */
+    boolean isInitialized();
+
+    /**
      * Unexport the pin on the system
      *
      * @return IPin

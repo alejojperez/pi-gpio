@@ -8,7 +8,8 @@ import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
 import com.alejojperez.pi_gpio.core.contracts.ILogger;
 import com.alejojperez.pi_gpio.core.contracts.IPin;
 import com.alejojperez.pi_gpio.core.Utils;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class GPIOController implements IGPIOController
     /**
      * Dictionary containing all the pins in use
      */
-    protected HashMap<String, IPin> pins = new HashMap<String, IPin>(40);
+    protected ObservableMap<String, IPin> pins = FXCollections.observableMap(new HashMap<String, IPin>(40));
 
     /**
      * Create a private constructor, so the
@@ -41,8 +42,9 @@ public class GPIOController implements IGPIOController
      */
     public IGPIOController addPin(String alias, int pinNumber)
     {
+
         if(!Utils.validPinNumber(pinNumber)) {
-            this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + Integer.toString(pinNumber) + "' in not valid.");
+            this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + Integer.toString(pinNumber) + "' is not valid.");
         } else {
             try {
                 IPin pin = new Pin(pinNumber);
@@ -58,7 +60,7 @@ public class GPIOController implements IGPIOController
     /**
      * @inheritdoc
      */
-    public IGPIOController addPins(HashMap<String, Integer> pins)
+    public IGPIOController addPins(ObservableMap<String, Integer> pins)
     {
         pins.forEach((alias, pinNumber) -> this.addPin(alias, pinNumber));
 
@@ -156,6 +158,14 @@ public class GPIOController implements IGPIOController
     }
 
     /**
+     * @inheritdoc
+     */
+    public ObservableMap<String, IPin> getAll()
+    {
+        return this.pins;
+    }
+
+    /**
      * Returns a class instance: using singleton design pattern
      *
      * @return IGPIOController
@@ -190,7 +200,7 @@ public class GPIOController implements IGPIOController
 
     private void logInvalidPinNumber(String alias, int pinNumber)
     {
-        this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + pinNumber + "' in not valid.");
+        this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + pinNumber + "' is not valid.");
     }
 
     //endregion

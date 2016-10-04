@@ -4,7 +4,7 @@
  */
 package com.alejojperez.pi_gpio.core.contracts;
 
-import java.util.HashMap;
+import javafx.collections.ObservableMap;
 
 public interface IGPIOController extends ICanLog
 {
@@ -26,7 +26,7 @@ public interface IGPIOController extends ICanLog
      * @return
      * @throws Exception
      */
-    IGPIOController addPins(HashMap<String, Integer> pins);
+    IGPIOController addPins(ObservableMap<String, Integer> pins);
 
     /**
      * Change an existing pin alias to use a different pin number
@@ -69,4 +69,11 @@ public interface IGPIOController extends ICanLog
      * @return
      */
     IPin get(String alias);
+
+    /**
+     * Get an observable list containing all the pins
+     *
+     * @return
+     */
+    ObservableMap<String, IPin> getAll();
 }

@@ -21,6 +21,13 @@ public interface IPin extends ICanLog
     IPin destroy();
 
     /**
+     * Get the pin number
+     *
+     * @return int
+     */
+    int getPinNumber();
+
+    /**
      * @inheritdoc
      */
     IPin registerLogger(ILogger logger);

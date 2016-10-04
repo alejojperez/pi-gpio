@@ -133,6 +133,14 @@ public class Pin implements IPin
     /**
      * @inheritdoc
      */
+    public int getPinNumber()
+    {
+        return this.pin;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public void logMessageIfPossible(Object object)
     {
         if(this.logger != null)

@@ -7,13 +7,8 @@ package com.alejojperez.pi_gpio.core.implementations;
 import com.alejojperez.pi_gpio.core.contracts.ILogger;
 import com.alejojperez.pi_gpio.core.contracts.IPin;
 import com.alejojperez.pi_gpio.core.Utils;
-
 import javax.xml.xpath.XPathConstants;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Pin implements IPin
@@ -77,12 +72,8 @@ public class Pin implements IPin
         else
         {
             try {
-                FileWriter fileWriter;
-
                 // Tell the system that the pin "x" is not going to be used any more
-                fileWriter = new FileWriter(this.unexportPath);
-                fileWriter.write(strPin);
-                fileWriter.close();
+                Files.write(Paths.get(this.unexportPath), strPin.getBytes());
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
@@ -164,12 +155,8 @@ public class Pin implements IPin
         else
         {
             try {
-                FileWriter fileWriter;
-
                 // Tell the system that the pin "x" is going to be used
-                fileWriter = new FileWriter(this.exportPath);
-                fileWriter.write(strPin);
-                fileWriter.close();
+                Files.write(Paths.get(this.exportPath), strPin.getBytes());
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);

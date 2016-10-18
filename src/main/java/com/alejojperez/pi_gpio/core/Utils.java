@@ -16,6 +16,8 @@ import org.w3c.dom.Document;
 
 public class Utils
 {
+    public static String configPath = "./target/classes/configuration.xml";
+
     /**
      * Returns a configuration value based on the XPtah expression
      *
@@ -25,9 +27,7 @@ public class Utils
      */
     public static Object config(String xPathExpression, QName resultType)
     {
-        String configPath = "./target/classes/configuration.xml";
-
-        return Utils.xmlValue(configPath, xPathExpression, resultType);
+        return Utils.xmlValue(Utils.configPath, xPathExpression, resultType);
     }
 
     /**

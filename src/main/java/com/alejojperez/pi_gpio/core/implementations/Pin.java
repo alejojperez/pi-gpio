@@ -10,7 +10,11 @@ import com.alejojperez.pi_gpio.core.Utils;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Pin implements IPin
 {
@@ -26,18 +30,8 @@ public class Pin implements IPin
     protected final String exportPath;
     protected final String unexportPath;
     protected final String valuePath;
+    protected final String isInitializedPath;
     protected final String placeholderPath;
-
-    /**
-     * The file instance used to write to the
-     * system files
-     */
-    protected File file = null;
-
-    /**
-     * Flag to determine if the pin was successfully initialized
-     */
-    protected boolean initialized = false;
 
     /**
      * Logger class in charge of logging any relevant information
@@ -65,7 +59,95 @@ public class Pin implements IPin
         this.exportPath = (String) Utils.config("//system/GPIO/pin/paths/export/text()", XPathConstants.STRING);
         this.unexportPath = (String) Utils.config("//system/GPIO/pin/paths/unexport/text()", XPathConstants.STRING);
         this.valuePath = (String) Utils.config("//system/GPIO/pin/paths/value/text()", XPathConstants.STRING);
+        this.isInitializedPath = (String) Utils.config("//system/GPIO/paths/isInitialized/text()", XPathConstants.STRING);
         this.placeholderPath = (String) Utils.config("//system/GPIO/pin/placeholder/text()", XPathConstants.STRING);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public IPin destroy()
+    {
+        String strPin = Integer.toString(this.pin);
+
+        if(!this.isInitialized())
+        {
+            this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, it can not be destroyed.");
+        }
+        else
+        {
+            try {
+                FileWriter fileWriter;
+
+                // Tell the system that the pin "x" is not going to be used any more
+                fileWriter = new FileWriter(this.unexportPath);
+                fileWriter.write(strPin);
+                fileWriter.close();
+
+            } catch(Exception e) {
+                this.logMessageIfPossible(e);
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public String getDirection()
+    {
+        String strPin = Integer.toString(this.pin);
+
+        if(!this.isInitialized()) {
+            this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, its direction can not be obtained.");
+        }
+        else
+            {
+            try {
+                // Set the direction of the pin
+                String direcPath = this.directionPath.replace(this.placeholderPath, strPin);
+                return new String(Files.readAllBytes(Paths.get(direcPath)));
+
+            } catch(Exception e) {
+                this.logMessageIfPossible(e);
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public String getValue()
+    {
+        String strPin = Integer.toString(this.pin);
+
+        if(!this.isInitialized()) {
+            this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, its value can not be obtained.");
+        }
+        else
+        {
+            try {
+                // Set the direction of the pin
+                String valuePath = this.valuePath.replace(this.placeholderPath, strPin);
+                return new String(Files.readAllBytes(Paths.get(valuePath)));
+
+            } catch(Exception e) {
+                this.logMessageIfPossible(e);
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public int getPinNumber()
+    {
+        return this.pin;
     }
 
     /**
@@ -75,7 +157,7 @@ public class Pin implements IPin
     {
         String strPin = Integer.toString(this.pin);
 
-        if(this.initialized)
+        if(this.isInitialized())
         {
             this.logMessageIfPossible("The pin number " + strPin + " is already initialized; therefore, it can not be initialized again.");
         }
@@ -88,8 +170,6 @@ public class Pin implements IPin
                 fileWriter = new FileWriter(this.exportPath);
                 fileWriter.write(strPin);
                 fileWriter.close();
-
-                this.initialized = true;
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
@@ -104,46 +184,10 @@ public class Pin implements IPin
      */
     public boolean isInitialized()
     {
-        return this.initialized;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public IPin destroy()
-    {
         String strPin = Integer.toString(this.pin);
+        String initPath = this.isInitializedPath.replace(this.placeholderPath, strPin);
 
-        if(!this.initialized)
-        {
-            this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, it can not be destroyed.");
-        }
-        else
-        {
-            try {
-                FileWriter fileWriter;
-
-                // Tell the system that the pin "x" is not going to be used any more
-                fileWriter = new FileWriter(this.unexportPath);
-                fileWriter.write(strPin);
-                fileWriter.close();
-
-                this.initialized = false;
-
-            } catch(Exception e) {
-                this.logMessageIfPossible(e);
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public int getPinNumber()
-    {
-        return this.pin;
+        return Files.isDirectory(Paths.get(initPath));
     }
 
     /**
@@ -174,7 +218,7 @@ public class Pin implements IPin
     {
         String strPin = Integer.toString(this.pin);
 
-        if(!this.initialized) {
+        if(!this.isInitialized()) {
             this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, its direction can not be set.");
         }
         else if(direction != Pin.GPIO_IN && direction != Pin.GPIO_OUT) {
@@ -182,13 +226,9 @@ public class Pin implements IPin
         }
         else {
             try {
-                FileWriter fileWriter;
-
                 // Set the direction of the pin
                 String direcPath = this.directionPath.replace(this.placeholderPath, strPin);
-                fileWriter = new FileWriter(direcPath);
-                fileWriter.write(direction);
-                fileWriter.close();
+                Files.write(Paths.get(direcPath), direction.getBytes());
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
@@ -205,7 +245,7 @@ public class Pin implements IPin
     {
         String strPin = Integer.toString(this.pin);
 
-        if(!this.initialized) {
+        if(!this.isInitialized()) {
             this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, its value can not be set.");
         }
         else if(value != Pin.GPIO_ON && value != Pin.GPIO_OFF) {
@@ -213,13 +253,9 @@ public class Pin implements IPin
         }
         else {
             try {
-                FileWriter fileWriter;
-
-                // Set the direction of the pin
+                // Set the value of the pin
                 String valPath = this.valuePath.replace(this.placeholderPath, strPin);
-                fileWriter = new FileWriter(valPath, true);
-                fileWriter.write(value);
-                fileWriter.close();
+                Files.write(Paths.get(valPath), value.getBytes());
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);

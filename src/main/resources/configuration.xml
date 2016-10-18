@@ -9,6 +9,7 @@
                     <export>/sys/class/gpio/export</export>
                     <unexport>/sys/class/gpio/unexport</unexport>
                     <value>/sys/class/gpio/gpio${PIN_NUMBER}$/value</value>
+                    <isInitialized>/sys/class/gpio/gpio${PIN_NUMBER}$</isInitialized>
                 </paths>
             </pin>
         </GPIO>

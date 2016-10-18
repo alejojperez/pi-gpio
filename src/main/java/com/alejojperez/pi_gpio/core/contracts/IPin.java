@@ -7,6 +7,34 @@ package com.alejojperez.pi_gpio.core.contracts;
 public interface IPin extends ICanLog
 {
     /**
+     * Unexport the pin on the system
+     *
+     * @return IPin
+     */
+    IPin destroy();
+
+    /**
+     * Get the pin direction
+     *
+     * @return String
+     */
+    String getDirection();
+
+    /**
+     * Get the pin value
+     *
+     * @return String
+     */
+    String getValue();
+
+    /**
+     * Get the pin number
+     *
+     * @return int
+     */
+    int getPinNumber();
+
+    /**
      * Export the pin on the system
      *
      * @return IPin
@@ -19,20 +47,6 @@ public interface IPin extends ICanLog
      * @return
      */
     boolean isInitialized();
-
-    /**
-     * Unexport the pin on the system
-     *
-     * @return IPin
-     */
-    IPin destroy();
-
-    /**
-     * Get the pin number
-     *
-     * @return int
-     */
-    int getPinNumber();
 
     /**
      * @inheritdoc

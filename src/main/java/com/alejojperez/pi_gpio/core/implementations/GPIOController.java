@@ -10,12 +10,24 @@ import com.alejojperez.pi_gpio.core.contracts.IPin;
 import com.alejojperez.pi_gpio.core.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+
+import javax.xml.xpath.XPathConstants;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class GPIOController implements IGPIOController
 {
+    /**
+     * General path to where all the pins are located
+     */
+    protected String generalPath;
+
     /**
      * Class instance: using singleton design pattern
      */
@@ -35,20 +47,24 @@ public class GPIOController implements IGPIOController
      * Create a private constructor, so the
      * class can not be instantiate
      */
-    private GPIOController() { }
+    private GPIOController()
+    {
+        this.generalPath = (String) Utils.config("//system/GPIO/pin/paths/generalPath/text()", XPathConstants.STRING);
+        this.sync();
+    }
 
     /**
      * @inheritdoc
      */
     public IGPIOController addPin(String alias, int pinNumber)
     {
-
         if(!Utils.validPinNumber(pinNumber)) {
             this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + Integer.toString(pinNumber) + "' is not valid.");
         } else {
             try {
                 IPin pin = new Pin(pinNumber);
-                this.pins.putIfAbsent(alias, pin);
+                if(!this.pins.containsValue(pin))
+                    this.pins.putIfAbsent(alias, pin);
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
             }
@@ -136,6 +152,12 @@ public class GPIOController implements IGPIOController
      */
     public void finalize()
     {
+        try {
+            super.finalize();
+        } catch(Throwable throwable) {
+            this.logMessageIfPossible(System.err.toString());
+        }
+
         this.flushPins();
     }
 
@@ -192,6 +214,34 @@ public class GPIOController implements IGPIOController
     public IGPIOController registerLogger(ILogger logger)
     {
         this.logger = logger;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public IGPIOController sync()
+    {
+        try {
+            Files.list(Paths.get(this.generalPath))
+                    .filter(path -> {
+                        String[] directoires = path.toString().split("/");
+                        String directory = directoires[ directoires.length - 1 ];
+
+                        return Files.isDirectory(path) && directory.startsWith("gpio");
+                    })
+                    .forEach(action -> {
+                        String[] directoires = action.toString().split("/");
+                        String strPin = directoires[ directoires.length - 1 ].replaceAll("gpio", "");
+
+                        int pin = Integer.getInteger(strPin);
+
+                        this.addPin("Default Pin Alias: " + strPin, pin);
+                    });
+        } catch(IOException e) {
+            this.logMessageIfPossible(System.err.toString());
+        }
 
         return this;
     }

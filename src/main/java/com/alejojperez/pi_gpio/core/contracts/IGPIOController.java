@@ -23,8 +23,7 @@ public interface IGPIOController extends ICanLog
      * already within it
      *
      * @param pins
-     * @return
-     * @throws Exception
+     * @return IGPIOController
      */
     IGPIOController addPins(ObservableMap<String, Integer> pins);
 
@@ -35,8 +34,7 @@ public interface IGPIOController extends ICanLog
      *
      * @param alias
      * @param pinNumber
-     * @return
-     * @throws Exception
+     * @return IGPIOController
      */
     IGPIOController changePin(String alias, int pinNumber);
 
@@ -44,7 +42,7 @@ public interface IGPIOController extends ICanLog
      * Remove a pin, if it exists, by the given alias
      *
      * @param alias
-     * @return
+     * @return IGPIOController
      */
     IGPIOController deletePin(String alias);
 
@@ -58,7 +56,7 @@ public interface IGPIOController extends ICanLog
     /**
      * Remove all the pins
      *
-     * @return
+     * @return IGPIOController
      */
     IGPIOController flushPins();
 
@@ -66,14 +64,21 @@ public interface IGPIOController extends ICanLog
      * Get a pin by the alias
      *
      * @param alias
-     * @return
+     * @return IGPIOController
      */
     IPin get(String alias);
 
     /**
      * Get an observable list containing all the pins
      *
-     * @return
+     * @return ObservableMap
      */
     ObservableMap<String, IPin> getAll();
+
+    /**
+     * Sync all the initialized pins
+     *
+     * @return IGPIOController
+     */
+    IGPIOController sync();
 }

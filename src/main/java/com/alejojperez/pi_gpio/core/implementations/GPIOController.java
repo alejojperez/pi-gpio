@@ -235,9 +235,10 @@ public class GPIOController implements IGPIOController
                         String[] directoires = action.toString().split("/");
                         String strPin = directoires[ directoires.length - 1 ].replaceAll("gpio", "");
 
-                        int pin = Integer.getInteger(strPin).intValue();
-
-                        this.addPin("Default Pin Alias: " + strPin, pin);
+                        try {
+                            int pin = Integer.getInteger(strPin);
+                            this.addPin("Default Pin Alias: " + strPin, pin);
+                        } catch(Exception e) {}
                     });
         } catch(IOException e) {
             this.logMessageIfPossible(System.err.toString());

@@ -10,8 +10,7 @@
                     <unexport>/sys/class/gpio/unexport</unexport>
                     <value>/sys/class/gpio/gpio${PIN_NUMBER}$/value</value>
                     <isInitialized>/sys/class/gpio/gpio${PIN_NUMBER}$</isInitialized>
-                    <!--<generalPath>/sys/class/gpio</generalPath>-->
-                    <generalPath>/Users/Alejandro/MyStuff/Code</generalPath>
+                    <generalPath>/sys/class/gpio</generalPath>
                 </paths>
             </pin>
         </GPIO>

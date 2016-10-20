@@ -54,7 +54,7 @@ public class Pin implements IPin
         this.exportPath = (String) Utils.config("//system/GPIO/pin/paths/export/text()", XPathConstants.STRING);
         this.unexportPath = (String) Utils.config("//system/GPIO/pin/paths/unexport/text()", XPathConstants.STRING);
         this.valuePath = (String) Utils.config("//system/GPIO/pin/paths/value/text()", XPathConstants.STRING);
-        this.isInitializedPath = (String) Utils.config("//system/GPIO/paths/isInitialized/text()", XPathConstants.STRING);
+        this.isInitializedPath = (String) Utils.config("//system/GPIO/pin/paths/isInitialized/text()", XPathConstants.STRING);
         this.placeholderPath = (String) Utils.config("//system/GPIO/pin/placeholder/text()", XPathConstants.STRING);
     }
 

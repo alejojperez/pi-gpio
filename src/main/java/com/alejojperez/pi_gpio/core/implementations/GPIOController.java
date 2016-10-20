@@ -236,7 +236,7 @@ public class GPIOController implements IGPIOController
                         String strPin = directoires[ directoires.length - 1 ].replaceAll("gpio", "");
 
                         try {
-                            int pin = Integer.getInteger(strPin);
+                            int pin = Integer.parseInt(strPin);
                             this.addPin("Default Pin Alias: " + strPin, pin);
                         } catch(Exception e) {
                             this.logMessageIfPossible(System.err.toString());

@@ -226,14 +226,14 @@ public class GPIOController implements IGPIOController
         try {
             Files.list(Paths.get(this.generalPath))
                     .filter(path -> {
-                        String[] directoires = path.toString().split("/");
-                        String directory = directoires[ directoires.length - 1 ];
+                        String[] directories = path.toString().split("/");
+                        String directory = directories[ directories.length - 1 ];
 
                         return Files.isDirectory(path) && directory.startsWith("gpio");
                     })
                     .forEach(action -> {
-                        String[] directoires = action.toString().split("/");
-                        String strPin = directoires[ directoires.length - 1 ].replaceAll("gpio", "");
+                        String[] directories = action.toString().split("/");
+                        String strPin = directories[ directories.length - 1 ].replaceAll("gpio", "");
 
                         try {
                             int pin = Integer.parseInt(strPin);

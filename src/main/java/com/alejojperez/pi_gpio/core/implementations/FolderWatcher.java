@@ -66,7 +66,7 @@ public class FolderWatcher implements IFolderWatcher
      * @inheritdoc
      */
     public void processEvents(IGPIOController controller) {
-        for (;;) {
+        while (true) {
 
             // wait for key to be signalled
             WatchKey key;

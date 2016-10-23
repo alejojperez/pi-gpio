@@ -10,11 +10,6 @@ import java.nio.file.Path;
 public interface IFolderWatcher
 {
     /**
-     * Process all events for keys queued to the watcher
-     */
-    void processEvents(IGPIOController controller);
-
-    /**
      * Register the given directory with the WatchService
      */
     void register(Path dir) throws IOException;
@@ -24,4 +19,14 @@ public interface IFolderWatcher
      * WatchService.
      */
     void registerAll(final Path start) throws IOException;
+
+    /**
+     * Start listening for all events
+     */
+    void start(IGPIOController controller);
+
+    /**
+     * Stop listening for all events
+     */
+    void stop();
 }

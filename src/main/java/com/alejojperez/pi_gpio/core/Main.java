@@ -20,35 +20,24 @@ public class Main
         IFileLogger logger = new FileLogger();
         controller.registerLogger(logger);
 
+        try {
 
-        while(true)
-        {
-            System.out.println("CYCLED!!");
-            try {
-                Thread.sleep(3000);
-            } catch(InterruptedException e) {
-                e.printStackTrace();
-            }
+            controller.get("red-pin").setValue(Pin.GPIO_ON);
+            Thread.sleep(3000);
+            controller.get("red-pin").setValue(Pin.GPIO_OFF);
+
+            controller.get("blue-pin").setValue(Pin.GPIO_ON);
+            Thread.sleep(3000);
+            controller.get("blue-pin").setValue(Pin.GPIO_OFF);
+
+            controller.get("yellow-pin").setValue(Pin.GPIO_ON);
+            Thread.sleep(3000);
+            controller.get("yellow-pin").setValue(Pin.GPIO_OFF);
+
+            controller.flushPins();
+
+        } catch(Exception e) {
+            e.printStackTrace();
         }
-
-//        try {
-//
-//            controller.get("red-pin").setValue(Pin.GPIO_ON);
-//            Thread.sleep(3000);
-//            controller.get("red-pin").setValue(Pin.GPIO_OFF);
-//
-//            controller.get("blue-pin").setValue(Pin.GPIO_ON);
-//            Thread.sleep(3000);
-//            controller.get("blue-pin").setValue(Pin.GPIO_OFF);
-//
-//            controller.get("yellow-pin").setValue(Pin.GPIO_ON);
-//            Thread.sleep(3000);
-//            controller.get("yellow-pin").setValue(Pin.GPIO_OFF);
-//
-//            controller.flushPins();
-//
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
     }
 }

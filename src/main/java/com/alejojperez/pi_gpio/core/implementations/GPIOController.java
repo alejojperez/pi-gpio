@@ -60,7 +60,7 @@ public class GPIOController implements IGPIOController
 
         try {
             this.folderWatcher = new FolderWatcher(Paths.get(this.generalPath), true);
-            this.folderWatcher.processEvents(this);
+            this.folderWatcher.start(this);
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -175,6 +175,7 @@ public class GPIOController implements IGPIOController
             this.logMessageIfPossible(System.err.toString());
         }
 
+        this.folderWatcher.stop();
         this.flushPins();
     }
 

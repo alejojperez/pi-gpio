@@ -16,11 +16,15 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FolderWatcher implements IFolderWatcher
 {
     private final WatchService watcher;
+    private final ExecutorService executor;
     private final Map<WatchKey,Path> keys;
+    private final Path dir;
     private final boolean recursive;
     private boolean trace = false;
     public static boolean log = false;
@@ -36,15 +40,17 @@ public class FolderWatcher implements IFolderWatcher
     FolderWatcher(Path dir, boolean recursive) throws IOException
     {
         this.watcher = FileSystems.getDefault().newWatchService();
+        this.executor = Executors.newSingleThreadExecutor();
         this.keys = new HashMap<WatchKey,Path>();
         this.recursive = recursive;
+        this.dir = dir;
 
         if (recursive) {
-            this.logMessageIfPossible("SCANNING: "+dir);
-            registerAll(dir);
-            this.logMessageIfPossible("DONE SCANNING: "+dir);
+            this.logMessageIfPossible("SCANNING: "+this.dir);
+            registerAll(this.dir);
+            this.logMessageIfPossible("DONE SCANNING: "+this.dir);
         } else {
-            register(dir);
+            register(this.dir);
         }
 
         // enable trace after initial registration
@@ -59,70 +65,6 @@ public class FolderWatcher implements IFolderWatcher
         if(FolderWatcher.log)
         {
             System.out.println(object.toString());
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public void processEvents(IGPIOController controller) {
-        while (true) {
-
-            // wait for key to be signalled
-            WatchKey key;
-            try {
-                key = watcher.take();
-            } catch (InterruptedException x) {
-                return;
-            }
-
-            Path dir = keys.get(key);
-            if (dir == null) {
-                this.logMessageIfPossible("ERROR: WatchKey not recognized!");
-                continue;
-            }
-
-            for (WatchEvent<?> event: key.pollEvents()) {
-                WatchEvent.Kind kind = event.kind();
-
-                // TBD - provide example of how OVERFLOW event is handled
-                if (kind == OVERFLOW) {
-                    continue;
-                }
-
-                // Context for directory entry event is the file name of entry
-                WatchEvent<Path> ev = cast(event);
-                Path name = ev.context();
-                Path child = dir.resolve(name);
-
-                // print out event
-                this.logMessageIfPossible(event.kind().name()+": "+child);
-
-                // if directory is created, and watching recursively, then
-                // register it and its sub-directories
-                if (recursive && (kind == ENTRY_CREATE)) {
-                    try {
-                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
-                            registerAll(child);
-                        }
-                    } catch (IOException x) {
-                        // ignore to keep sample readbale
-                    }
-                }
-
-                controller.sync();
-            }
-
-            // reset key and remove from set if directory no longer accessible
-            boolean valid = key.reset();
-            if (!valid) {
-                keys.remove(key);
-
-                // all directories are inaccessible
-                if (keys.isEmpty()) {
-                    break;
-                }
-            }
         }
     }
 
@@ -158,5 +100,90 @@ public class FolderWatcher implements IFolderWatcher
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void start(IGPIOController controller) {
+        this.executor.submit(() -> {
+            while (true) {
+
+                // wait for key to be signalled
+                WatchKey key;
+                try {
+                    key = watcher.take();
+                } catch (InterruptedException x) {
+                    return;
+                }
+
+                Path dir = keys.get(key);
+                if (dir == null) {
+                    logMessageIfPossible("ERROR: WatchKey not recognized!");
+                    continue;
+                }
+
+                for (WatchEvent<?> event: key.pollEvents()) {
+                    WatchEvent.Kind kind = event.kind();
+
+                    // TBD - provide example of how OVERFLOW event is handled
+                    if (kind == OVERFLOW) {
+                        continue;
+                    }
+
+                    // Context for directory entry event is the file name of entry
+                    WatchEvent<Path> ev = cast(event);
+                    Path name = ev.context();
+                    Path child = dir.resolve(name);
+
+                    // print out event
+                    logMessageIfPossible(event.kind().name()+": "+child);
+
+                    // if directory is created, and watching recursively, then
+                    // register it and its sub-directories
+                    if (recursive && (kind == ENTRY_CREATE)) {
+                        try {
+                            if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
+                                registerAll(child);
+                            }
+                        } catch (IOException x) {
+                            // ignore to keep sample readbale
+                        }
+                    }
+
+                    controller.sync();
+                }
+
+                // reset key and remove from set if directory no longer accessible
+                boolean valid = key.reset();
+                if (!valid) {
+                    keys.remove(key);
+
+                    // all directories are inaccessible
+                    if (keys.isEmpty()) {
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void stop()
+    {
+        if(!this.executor.isShutdown())
+        {
+            logMessageIfPossible("SHUTTING DOWN: " + this.dir);
+            try {
+                watcher.close();
+            } catch(IOException e) {
+                logMessageIfPossible("Sorry, we could not stop the folder watcher.");
+            }
+
+            this.executor.shutdown();
+            logMessageIfPossible("DONE SHUTTING DOWN: " + this.dir);
+        }
     }
 }

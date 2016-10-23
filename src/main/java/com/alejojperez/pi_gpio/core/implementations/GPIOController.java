@@ -4,6 +4,7 @@
  */
 package com.alejojperez.pi_gpio.core.implementations;
 
+import com.alejojperez.pi_gpio.core.contracts.IFolderWatcher;
 import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
 import com.alejojperez.pi_gpio.core.contracts.ILogger;
 import com.alejojperez.pi_gpio.core.contracts.IPin;
@@ -44,6 +45,11 @@ public class GPIOController implements IGPIOController
     protected ObservableMap<String, IPin> pins = FXCollections.observableMap(new HashMap<String, IPin>(40));
 
     /**
+     * Service to listen for folder change
+     */
+    protected IFolderWatcher folderWatcher;
+
+    /**
      * Create a private constructor, so the
      * class can not be instantiate
      */
@@ -51,6 +57,13 @@ public class GPIOController implements IGPIOController
     {
         this.generalPath = (String) Utils.config("//system/GPIO/pin/paths/generalPath/text()", XPathConstants.STRING);
         this.sync();
+
+        try {
+            this.folderWatcher = new FolderWatcher(Paths.get(this.generalPath), true);
+            this.folderWatcher.processEvents(this);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -63,8 +76,12 @@ public class GPIOController implements IGPIOController
         } else {
             try {
                 IPin pin = new Pin(pinNumber);
-                if(!this.pins.containsValue(pin))
-                    this.pins.putIfAbsent(alias, pin);
+                if(!this.pins.containsValue(pin)) {
+                    this.pins.put(alias, pin);
+
+                    if(this.logger != null)
+                        this.pins.get(alias).registerLogger(this.logger);
+                }
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
             }

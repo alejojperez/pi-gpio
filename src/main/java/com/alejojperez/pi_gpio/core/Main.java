@@ -7,6 +7,7 @@ package com.alejojperez.pi_gpio.core;
 import com.alejojperez.pi_gpio.core.contracts.IFileLogger;
 import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
 import com.alejojperez.pi_gpio.core.implementations.FileLogger;
+import com.alejojperez.pi_gpio.core.implementations.FolderWatcher;
 import com.alejojperez.pi_gpio.core.implementations.GPIOController;
 import com.alejojperez.pi_gpio.core.implementations.Pin;
 
@@ -14,13 +15,12 @@ public class Main
 {
     public static void main(String[] args)
     {
+        FolderWatcher.log = true;
         IGPIOController controller = GPIOController.getInstance();
         IFileLogger logger = new FileLogger();
+        controller.registerLogger(logger);
 
         try {
-            controller.addPin("red-pin", 11).get("red-pin").registerLogger(logger).initialize().setDirection(Pin.GPIO_OUT);
-            controller.addPin("blue-pin", 12).get("blue-pin").registerLogger(logger).initialize().setDirection(Pin.GPIO_OUT);
-            controller.addPin("yellow-pin", 13).get("yellow-pin").registerLogger(logger).initialize().setDirection(Pin.GPIO_OUT);
 
             controller.get("red-pin").setValue(Pin.GPIO_ON);
             Thread.sleep(3000);

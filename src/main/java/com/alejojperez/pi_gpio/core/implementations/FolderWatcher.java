@@ -5,112 +5,157 @@
 package com.alejojperez.pi_gpio.core.implementations;
 
 import com.alejojperez.pi_gpio.core.contracts.IFolderWatcher;
-import com.sun.nio.file.SensitivityWatchEventModifier;
-
-import java.io.File;
+import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
 import java.io.IOException;
+import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Consumer;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 public class FolderWatcher implements IFolderWatcher
 {
-    private WatchService watcher;
+    private final WatchService watcher;
+    private final Map<WatchKey,Path> keys;
+    private final boolean recursive;
+    private boolean trace = false;
+    public static boolean log = false;
 
-    private ExecutorService executor;
-
-    @Override
-    public void start(String path)
-    {
-        try {
-            this.watcher = FileSystems.getDefault().newWatchService();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        this.executor = Executors.newSingleThreadExecutor();
-
-        if(this.watcher != null)
-            this.initialize(path);
-        else
-            System.out.println("Sorry, we could not start the folder watcher.");
+    @SuppressWarnings("unchecked")
+    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
+        return (WatchEvent<T>)event;
     }
 
-    @Override
-    public void stop()
+    /**
+     * @inheritdoc
+     */
+    FolderWatcher(Path dir, boolean recursive) throws IOException
     {
-        try {
-            watcher.close();
-        } catch (IOException e) {
-            System.out.println("Sorry, we could not stop the folder watcher.");
+        this.watcher = FileSystems.getDefault().newWatchService();
+        this.keys = new HashMap<WatchKey,Path>();
+        this.recursive = recursive;
+
+        if (recursive) {
+            this.logMessageIfPossible("SCANNING: "+dir);
+            registerAll(dir);
+            this.logMessageIfPossible("DONE SCANNING: "+dir);
+        } else {
+            register(dir);
         }
 
-        this.executor.shutdown();
+        // enable trace after initial registration
+        this.trace = true;
     }
 
-    private void initialize(String path)
+    /**
+     * @inheritdoc
+     */
+    public void logMessageIfPossible(Object object)
     {
-        final Map<WatchKey, Path> keys = new HashMap<>();
+        if(FolderWatcher.log)
+        {
+            System.out.println(object.toString());
+        }
+    }
 
-        Consumer<Path> register = p -> {
-            if (!p.toFile().exists() || !p.toFile().isDirectory()) {
-                throw new RuntimeException("folder " + p + " does not exist or is not a directory");
-            }
+    /**
+     * @inheritdoc
+     */
+    public void processEvents(IGPIOController controller) {
+        for (;;) {
+
+            // wait for key to be signalled
+            WatchKey key;
             try {
-                Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        System.out.println("Registering " + dir + "in folder watcher service.");
-                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE}, SensitivityWatchEventModifier.HIGH);
-                        keys.put(watchKey, dir);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                throw new RuntimeException("Error registering path " + p);
+                key = watcher.take();
+            } catch (InterruptedException x) {
+                return;
             }
-        };
 
-        register.accept(Paths.get(path));
+            Path dir = keys.get(key);
+            if (dir == null) {
+                this.logMessageIfPossible("ERROR: WatchKey not recognized!");
+                continue;
+            }
 
-        executor.submit(() -> {
-            while (true) {
-                final WatchKey key;
-                try {
-                    key = watcher.take(); // wait for a key to be available
-                } catch (InterruptedException ex) {
-                    return;
-                }
+            for (WatchEvent<?> event: key.pollEvents()) {
+                WatchEvent.Kind kind = event.kind();
 
-                final Path dir = keys.get(key);
-                if (dir == null) {
-                    System.err.println("WatchKey " + key + " not recognized!");
+                // TBD - provide example of how OVERFLOW event is handled
+                if (kind == OVERFLOW) {
                     continue;
                 }
 
-                key.pollEvents().stream()
-                        .filter(e -> (e.kind() != OVERFLOW))
-                        .map(e -> ((WatchEvent<Path>) e).context())
-                        .forEach(p -> {
-                            final Path absPath = dir.resolve(p);
-                            if (absPath.toFile().isDirectory()) {
-                                register.accept(absPath);
-                            } else {
-                                final File f = absPath.toFile();
-                                System.err.println("Detected new file" + f.getAbsolutePath());
-                            }
-                        });
+                // Context for directory entry event is the file name of entry
+                WatchEvent<Path> ev = cast(event);
+                Path name = ev.context();
+                Path child = dir.resolve(name);
 
-                boolean valid = key.reset(); // IMPORTANT: The key must be reset after processed
-                if (!valid) {
+                // print out event
+                this.logMessageIfPossible(event.kind().name()+": "+child);
+
+                // if directory is created, and watching recursively, then
+                // register it and its sub-directories
+                if (recursive && (kind == ENTRY_CREATE)) {
+                    try {
+                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
+                            registerAll(child);
+                        }
+                    } catch (IOException x) {
+                        // ignore to keep sample readbale
+                    }
+                }
+
+                controller.sync();
+            }
+
+            // reset key and remove from set if directory no longer accessible
+            boolean valid = key.reset();
+            if (!valid) {
+                keys.remove(key);
+
+                // all directories are inaccessible
+                if (keys.isEmpty()) {
                     break;
                 }
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void register(Path dir) throws IOException {
+        WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        if (trace) {
+            Path prev = keys.get(key);
+            if (prev == null) {
+                this.logMessageIfPossible("REGISTER: "+dir);
+            } else {
+                if (!dir.equals(prev)) {
+                    this.logMessageIfPossible("UPDATE: "+prev+" -> "+dir);
+                }
+            }
+        }
+        keys.put(key, dir);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void registerAll(final Path start) throws IOException {
+        // register directory and sub-directories
+        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                    throws IOException
+            {
+                register(dir);
+                return FileVisitResult.CONTINUE;
             }
         });
     }

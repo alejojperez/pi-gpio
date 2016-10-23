@@ -4,17 +4,24 @@
  */
 package com.alejojperez.pi_gpio.core.contracts;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 public interface IFolderWatcher
 {
     /**
-     * Start the folder watcher
-     *
-     * @param path
+     * Process all events for keys queued to the watcher
      */
-    void start(String path);
+    void processEvents(IGPIOController controller);
 
     /**
-     * Stop the folder watcher
+     * Register the given directory with the WatchService
      */
-    void stop();
+    void register(Path dir) throws IOException;
+
+    /**
+     * Register the given directory, and all its sub-directories, with the
+     * WatchService.
+     */
+    void registerAll(final Path start) throws IOException;
 }

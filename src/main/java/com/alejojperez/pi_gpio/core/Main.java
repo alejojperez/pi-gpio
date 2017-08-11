@@ -22,17 +22,17 @@ public class Main
 
         try {
 
-            controller.get("red-pin").setValue(Pin.GPIO_ON);
-            Thread.sleep(3000);
-            controller.get("red-pin").setValue(Pin.GPIO_OFF);
-
-            controller.get("blue-pin").setValue(Pin.GPIO_ON);
-            Thread.sleep(3000);
-            controller.get("blue-pin").setValue(Pin.GPIO_OFF);
-
-            controller.get("yellow-pin").setValue(Pin.GPIO_ON);
-            Thread.sleep(3000);
-            controller.get("yellow-pin").setValue(Pin.GPIO_OFF);
+//            controller.get("red-pin").setValue(Pin.GPIO_ON);
+//            Thread.sleep(3000);
+//            controller.get("red-pin").setValue(Pin.GPIO_OFF);
+//
+//            controller.get("blue-pin").setValue(Pin.GPIO_ON);
+//            Thread.sleep(3000);
+//            controller.get("blue-pin").setValue(Pin.GPIO_OFF);
+//
+//            controller.get("yellow-pin").setValue(Pin.GPIO_ON);
+//            Thread.sleep(3000);
+//            controller.get("yellow-pin").setValue(Pin.GPIO_OFF);
 
             controller.flushPins();
 

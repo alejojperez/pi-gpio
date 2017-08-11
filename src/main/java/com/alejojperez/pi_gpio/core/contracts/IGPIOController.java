@@ -12,73 +12,54 @@ public interface IGPIOController extends ICanLog
      * Adds a new pin to the collection, if it is not
      * already within it
      *
-     * @param alias The name to be used for the pin
-     * @param pinNumber The GPIO pin number
+     * @param pin the pin entity
      * @return IGPIOController
      */
-    IGPIOController addPin(String alias, int pinNumber);
+    IGPIOController addPin(IPin pin);
 
     /**
      * Adds all the new pins to the collection, if they are not
      * already within it
      *
-     * @param pins
+     * @param pins the pin's collection
      * @return IGPIOController
      */
-    IGPIOController addPins(ObservableMap<String, Integer> pins);
+    IGPIOController addPins(ObservableMap<Integer, IPin> pins);
 
     /**
-     * Change an existing pin alias to use a different pin number
-     * if the alias exists, if it does not exist, then a new pin
-     * will be registered
+     * Remove a pin, if it exists, by the given pin number
      *
-     * @param alias
-     * @param pinNumber
+     * @param pin the pin entity
      * @return IGPIOController
      */
-    IGPIOController changePin(String alias, int pinNumber);
-
-    /**
-     * Remove a pin, if it exists, by the given alias
-     *
-     * @param alias
-     * @return IGPIOController
-     */
-    IGPIOController deletePin(String alias);
-
-    /**
-     * This method is called by the JVE Garbage Collector when is going
-     * dispose the object, so at this moment call flush pins to make sure
-     * that all the pins are reset
-     */
-    void finalize();
+    IGPIOController deletePin(IPin pin);
 
     /**
      * Remove all the pins
      *
-     * @return IGPIOController
+     * @return
      */
     IGPIOController flushPins();
 
     /**
-     * Get a pin by the alias
+     * Get a pin entity by the pin number
      *
-     * @param alias
+     * @param pinNumber the pin number
      * @return IGPIOController
      */
-    IPin get(String alias);
+    IPin get(Integer pinNumber);
 
     /**
      * Get an observable list containing all the pins
      *
      * @return ObservableMap
      */
-    ObservableMap<String, IPin> getAll();
+    ObservableMap<Integer, IPin> getPins();
 
     /**
      * Sync all the initialized pins
      *
-     * @return IGPIOController
+     * @return
      */
     IGPIOController sync();
 }

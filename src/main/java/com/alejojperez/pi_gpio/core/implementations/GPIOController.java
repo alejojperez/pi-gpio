@@ -14,13 +14,9 @@ import javafx.collections.ObservableMap;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 public class GPIOController implements IGPIOController
 {
@@ -42,7 +38,7 @@ public class GPIOController implements IGPIOController
     /**
      * Dictionary containing all the pins in use
      */
-    protected ObservableMap<String, IPin> pins = FXCollections.observableMap(new HashMap<String, IPin>(40));
+    protected ObservableMap<Integer, IPin> pins = FXCollections.observableMap(new HashMap<Integer, IPin>());
 
     /**
      * Service to listen for folder change
@@ -62,121 +58,53 @@ public class GPIOController implements IGPIOController
             this.folderWatcher = new FolderWatcher(Paths.get(this.generalPath), true);
             this.folderWatcher.start(this);
         } catch(IOException e) {
-            e.printStackTrace();
+            this.logMessageIfPossible(e);
         }
     }
 
     /**
      * @inheritdoc
      */
-    public IGPIOController addPin(String alias, int pinNumber)
-    {
-        if(!Utils.validPinNumber(pinNumber)) {
-            this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + Integer.toString(pinNumber) + "' is not valid.");
-        } else {
-            try {
-                IPin pin = new Pin(pinNumber);
-                if(!this.pins.containsValue(pin)) {
-                    this.pins.put(alias, pin);
-
-                    if(this.logger != null)
-                        this.pins.get(alias).registerLogger(this.logger);
-                }
-            } catch(Exception e) {
-                this.logMessageIfPossible(e);
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public IGPIOController addPins(ObservableMap<String, Integer> pins)
-    {
-        pins.forEach((alias, pinNumber) -> this.addPin(alias, pinNumber));
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public IGPIOController changePin(String alias, int pinNumber)
-    {
-        if(!Utils.validPinNumber(pinNumber))
-        {
-            this.logInvalidPinNumber(alias, pinNumber);
-        }
-        else
-        {
-            Object classInstance = null;
-            Method method = null;
-
-            if(this.pins.containsKey(alias))
-            {
-                try {
-                    classInstance = this.pins;
-                    method = HashMap.class.getDeclaredMethod("replace", Object.class, Object.class);
-                } catch(NoSuchMethodException e) {
-                    this.logMessageIfPossible(e);
-                }
-            }
-            else
-            {
-                try {
-                    classInstance = this;
-                    method = IGPIOController.class.getDeclaredMethod("addPin", String.class, int.class);
-                } catch(NoSuchMethodException e) {
-                    this.logMessageIfPossible(e);
-                }
-            }
-
-            if(classInstance != null && method != null)
-            {
-                try {
-                    method.invoke(classInstance, alias, pinNumber);
-                } catch(IllegalAccessException e) {
-                    this.logMessageIfPossible(e);
-                } catch(InvocationTargetException e) {
-                    this.logMessageIfPossible(e);
-                }
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public IGPIOController deletePin(String alias)
-    {
-        if(this.pins.containsKey(alias)) {
-            // Destroy the pin
-            this.pins.get(alias).destroy();
-
-            // Remove the pin from the list
-            this.pins.remove(alias);
-        }
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public void finalize()
+    public IGPIOController addPin(IPin pin)
     {
         try {
-            super.finalize();
-        } catch(Throwable throwable) {
-            this.logMessageIfPossible(System.err.toString());
+            if(!this.pins.containsValue(pin)) {
+                this.pins.put(pin.getPinNumber(), pin);
+
+                if(this.logger != null)
+                    this.pins.get(pin.getPinNumber()).registerLogger(this.logger);
+            }
+        } catch(Exception e) {
+            this.logMessageIfPossible(e);
         }
 
-        this.folderWatcher.stop();
-        this.flushPins();
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public IGPIOController addPins(ObservableMap<Integer, IPin> pins)
+    {
+        pins.forEach((pinNumber, pin) -> this.addPin(pin));
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public IGPIOController deletePin(IPin pin)
+    {
+        if(this.pins.containsKey(pin.getPinNumber())) {
+            // Destroy the pin
+            this.pins.get(pin.getPinNumber()).destroy();
+
+            // Remove the pin from the list
+            this.pins.remove(pin.getPinNumber());
+        }
+
+        return this;
     }
 
     /**
@@ -184,7 +112,7 @@ public class GPIOController implements IGPIOController
      */
     public IGPIOController flushPins()
     {
-        this.pins.forEach((alias, pinNumber) -> this.deletePin(alias));
+        this.pins.forEach((pinNumber, pin) -> this.deletePin(pin));
 
         return this;
     }
@@ -192,15 +120,13 @@ public class GPIOController implements IGPIOController
     /**
      * @inheritdoc
      */
-    public IPin get(String alias)
+    public IPin get(Integer pinNumber)
     {
-        return this.pins.get(alias);
+        return this.pins.get(pinNumber);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public ObservableMap<String, IPin> getAll()
+    @Override
+    public ObservableMap<Integer, IPin> getPins()
     {
         return this.pins;
     }
@@ -254,8 +180,7 @@ public class GPIOController implements IGPIOController
                         String strPin = directories[ directories.length - 1 ].replaceAll("gpio", "");
 
                         try {
-                            int pin = Integer.parseInt(strPin);
-                            this.addPin("Default Pin Alias: " + strPin, pin);
+                            this.addPin(new Pin(Integer.parseInt(strPin)));
                         } catch(Exception e) {
                             this.logMessageIfPossible(System.err.toString());
                         }
@@ -266,13 +191,4 @@ public class GPIOController implements IGPIOController
 
         return this;
     }
-
-    //region Helpers
-
-    private void logInvalidPinNumber(String alias, int pinNumber)
-    {
-        this.logMessageIfPossible("Sorry, the pin number provided for '" + alias + ":" + pinNumber + "' is not valid.");
-    }
-
-    //endregion
 }

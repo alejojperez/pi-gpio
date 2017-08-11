@@ -70,9 +70,6 @@ public class Pin implements IPin
      */
     public Pin(int pinNumber) throws Exception
     {
-        if(!Utils.validPinNumber(pinNumber))
-            throw new Exception("Sorry, the pin number [" + Integer.toString(pinNumber) + "] is not valid.");
-
         this.pin = pinNumber;
 
         this.directionPath = (String) Utils.config("//system/GPIO/pin/paths/direction/text()", XPathConstants.STRING);

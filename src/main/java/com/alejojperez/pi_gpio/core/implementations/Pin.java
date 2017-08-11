@@ -21,22 +21,47 @@ public class Pin implements IPin
     /**
      * All the GPIO file paths
      */
-    protected final String directionPath;
-    protected final String exportPath;
-    protected final String unexportPath;
-    protected final String valuePath;
-    protected final String isInitializedPath;
-    protected final String placeholderPath;
+    private final String directionPath;
+    private final String exportPath;
+    private final String unexportPath;
+    private final String valuePath;
+    private final String isInitializedPath;
+    private final String placeholderPath;
+
+    /**
+     * The pin alias
+     */
+    private String alias = "Default Alias";
+
+    /**
+     * Determines if the alias is editable or not
+     */
+    private boolean editable = false;
+
+    /**
+     * Determines if it is 5 volts power
+     */
+    private boolean fiveVolts = false;
+
+    /**
+     * Determines if it is 3 volts power
+     */
+    private boolean threeVolts = false;
+
+    /**
+     * Determines if it is ground
+     */
+    private boolean ground = false;
 
     /**
      * Logger class in charge of logging any relevant information
      */
-    protected ILogger logger;
+    private ILogger logger;
 
     /**
      * The pin number
      */
-    protected int pin;
+    private int pin;
 
     /**
      * The class constructor
@@ -81,6 +106,14 @@ public class Pin implements IPin
         }
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public String getAlias()
+    {
+        return this.alias;
     }
 
     /**
@@ -169,12 +202,44 @@ public class Pin implements IPin
     /**
      * @inheritdoc
      */
+    public boolean isEditable()
+    {
+        return this.editable;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public boolean isFiveVolts()
+    {
+        return this.fiveVolts;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public boolean isGround()
+    {
+        return ground;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public boolean isInitialized()
     {
         String strPin = Integer.toString(this.pin);
         String initPath = this.isInitializedPath.replace(this.placeholderPath, strPin);
 
         return Files.isDirectory(Paths.get(initPath));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public boolean isThreeVolts()
+    {
+        return this.threeVolts;
     }
 
     /**
@@ -195,6 +260,15 @@ public class Pin implements IPin
     {
         this.logger = logger;
 
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public Pin setAlias(String alias)
+    {
+        this.alias = alias;
         return this;
     }
 
@@ -222,6 +296,42 @@ public class Pin implements IPin
             }
         }
 
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public Pin setEditable(boolean editable)
+    {
+        this.editable = editable;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public Pin setFiveVolts(boolean fiveVolts)
+    {
+        this.fiveVolts = fiveVolts;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public Pin setGround(boolean ground)
+    {
+        this.ground = ground;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public Pin setThreeVolts(boolean threeVolts)
+    {
+        this.threeVolts = threeVolts;
         return this;
     }
 

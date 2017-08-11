@@ -28,7 +28,7 @@ public class GPIOController implements IGPIOController
     /**
      * Class instance: using singleton design pattern
      */
-    protected static GPIOController instance = new GPIOController();
+    protected static GPIOController instance;
 
     /**
      * Logger class in charge of logging any relevant information
@@ -138,6 +138,9 @@ public class GPIOController implements IGPIOController
      */
     public static IGPIOController getInstance()
     {
+        if(instance == null)
+             instance = new GPIOController();
+
         return instance;
     }
 

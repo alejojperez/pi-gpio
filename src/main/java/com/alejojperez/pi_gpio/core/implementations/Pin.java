@@ -342,8 +342,8 @@ public class Pin implements IPin
         if(!this.isInitialized()) {
             this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, its value can not be set.");
         }
-        else if(value != Pin.GPIO_ON && value != Pin.GPIO_OFF) {
-            logMessageIfPossible("Sorry, the value [" + value + "] set for pin number " + strPin + " is not valid.");
+        else if(!value.equals(Pin.GPIO_ON) && !value.equals(Pin.GPIO_OFF)) {
+            this.logMessageIfPossible("Sorry, the value [" + value + "] set for pin number " + strPin + " is not valid.");
         }
         else {
             try {

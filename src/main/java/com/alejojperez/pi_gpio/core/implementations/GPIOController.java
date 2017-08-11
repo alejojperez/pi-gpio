@@ -68,12 +68,10 @@ public class GPIOController implements IGPIOController
     public IGPIOController addPin(IPin pin)
     {
         try {
-            if(!this.pins.containsValue(pin)) {
-                this.pins.put(pin.getPinNumber(), pin);
+            this.pins.put(pin.getPinNumber(), pin);
 
-                if(this.logger != null)
-                    this.pins.get(pin.getPinNumber()).registerLogger(this.logger);
-            }
+            if(this.logger != null)
+                this.pins.get(pin.getPinNumber()).registerLogger(this.logger);
         } catch(Exception e) {
             this.logMessageIfPossible(e);
         }

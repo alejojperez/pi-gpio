@@ -31,7 +31,7 @@ public class Pin implements IPin
     /**
      * The pin alias
      */
-    private String alias = "Default Alias";
+    private String alias = "";
 
     /**
      * Determines if the alias is editable or not

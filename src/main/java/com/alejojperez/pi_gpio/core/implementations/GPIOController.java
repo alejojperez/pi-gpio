@@ -52,13 +52,6 @@ public class GPIOController implements IGPIOController
     private GPIOController()
     {
         this.generalPath = (String) Utils.config("//system/GPIO/pin/paths/generalPath/text()", XPathConstants.STRING);
-
-        try {
-            this.folderWatcher = new FolderWatcher(Paths.get(this.generalPath), true);
-            this.folderWatcher.start(this);
-        } catch(IOException e) {
-            this.logMessageIfPossible(e);
-        }
     }
 
     /**
@@ -165,6 +158,39 @@ public class GPIOController implements IGPIOController
         this.logger = logger;
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void startFolderWatcher()
+    {
+        if(this.folderWatcher != null && this.folderWatcher.getExecutor() != null && !this.folderWatcher.getExecutor().isShutdown())
+        {
+            this.logMessageIfPossible("The folder watch cannot we started because it is already running.");
+            return;
+        }
+
+        try {
+            this.folderWatcher = new FolderWatcher(Paths.get(this.generalPath), true);
+            this.folderWatcher.start(this);
+        } catch(IOException e) {
+            this.logMessageIfPossible(e);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public void stopFolderWatcher()
+    {
+        if(this.folderWatcher == null)
+        {
+            this.logMessageIfPossible("The folder watch cannot we stopped because it is not running.");
+            return;
+        }
+
+        this.folderWatcher.stop();
     }
 
     /**

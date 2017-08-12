@@ -6,9 +6,16 @@ package com.alejojperez.pi_gpio.core.contracts;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
 
 public interface IFolderWatcher
 {
+    /**
+     * Get the executor of the folder watch service
+     * @return
+     */
+    ExecutorService getExecutor();
+
     /**
      * Register the given directory with the WatchService
      */

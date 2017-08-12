@@ -57,6 +57,16 @@ public interface IGPIOController extends ICanLog
     ObservableMap<Integer, IPin> getPins();
 
     /**
+     * Start the folder watch service
+     */
+    void startFolderWatcher();
+
+    /**
+     * Stop the folder watch service
+     */
+    void stopFolderWatcher();
+
+    /**
      * Sync all the initialized pins
      *
      * @return

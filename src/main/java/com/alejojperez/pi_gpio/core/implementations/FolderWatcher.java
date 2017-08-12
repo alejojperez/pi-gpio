@@ -60,6 +60,14 @@ public class FolderWatcher implements IFolderWatcher
     /**
      * @inheritdoc
      */
+    public ExecutorService getExecutor()
+    {
+        return executor;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public void logMessageIfPossible(Object object)
     {
         if(FolderWatcher.log)

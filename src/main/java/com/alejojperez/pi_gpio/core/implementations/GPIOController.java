@@ -52,7 +52,6 @@ public class GPIOController implements IGPIOController
     private GPIOController()
     {
         this.generalPath = (String) Utils.config("//system/GPIO/pin/paths/generalPath/text()", XPathConstants.STRING);
-        this.sync();
 
         try {
             this.folderWatcher = new FolderWatcher(Paths.get(this.generalPath), true);
@@ -68,6 +67,11 @@ public class GPIOController implements IGPIOController
     public IGPIOController addPin(IPin pin)
     {
         try {
+            // Check if the pin exists and if the new pin does not
+            // have an alias, if so, set the same alias it had before
+            if((pin.getAlias() == null || pin.getAlias().isEmpty()) && this.pins.containsKey(pin.getPinNumber()))
+                pin.setAlias(this.pins.get(pin.getPinNumber()).getAlias());
+
             this.pins.put(pin.getPinNumber(), pin);
 
             if(this.logger != null)

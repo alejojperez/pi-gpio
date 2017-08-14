@@ -60,10 +60,19 @@ public class GPIOController implements IGPIOController
     public IGPIOController addPin(IPin pin)
     {
         try {
-            // Check if the pin exists and if the new pin does not
-            // have an alias, if so, set the same alias it had before
-            if((pin.getAlias() == null || pin.getAlias().isEmpty()) && this.pins.containsKey(pin.getGPIOPin()))
-                pin.setAlias(this.pins.get(pin.getGPIOPin()).getAlias());
+            // Check if the pin exists
+            if(this.pins.containsKey(pin.getGPIOPin()))
+            {
+                // Check if the new pin does not have an alias,
+                // if so, set the same alias it had before
+                if ((pin.getAlias() == null || pin.getAlias().isEmpty()))
+                    pin.setAlias(this.pins.get(pin.getGPIOPin()).getAlias());
+
+                // Check if the new pin does not have a pin number,
+                // if so, set the same pin number it had before
+                if (pin.getPin() == 0)
+                    pin.setPin(this.pins.get(pin.getGPIOPin()).getPin());
+            }
 
             this.pins.put(pin.getGPIOPin(), pin);
 

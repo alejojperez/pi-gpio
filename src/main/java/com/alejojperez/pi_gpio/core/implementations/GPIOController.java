@@ -62,13 +62,13 @@ public class GPIOController implements IGPIOController
         try {
             // Check if the pin exists and if the new pin does not
             // have an alias, if so, set the same alias it had before
-            if((pin.getAlias() == null || pin.getAlias().isEmpty()) && this.pins.containsKey(pin.getPinNumber()))
-                pin.setAlias(this.pins.get(pin.getPinNumber()).getAlias());
+            if((pin.getAlias() == null || pin.getAlias().isEmpty()) && this.pins.containsKey(pin.getGPIOPin()))
+                pin.setAlias(this.pins.get(pin.getGPIOPin()).getAlias());
 
-            this.pins.put(pin.getPinNumber(), pin);
+            this.pins.put(pin.getGPIOPin(), pin);
 
             if(this.logger != null)
-                this.pins.get(pin.getPinNumber()).registerLogger(this.logger);
+                this.pins.get(pin.getGPIOPin()).registerLogger(this.logger);
         } catch(Exception e) {
             this.logMessageIfPossible(e);
         }
@@ -91,12 +91,12 @@ public class GPIOController implements IGPIOController
      */
     public IGPIOController deletePin(IPin pin)
     {
-        if(this.pins.containsKey(pin.getPinNumber())) {
+        if(this.pins.containsKey(pin.getGPIOPin())) {
             // Destroy the pin
-            this.pins.get(pin.getPinNumber()).destroy();
+            this.pins.get(pin.getGPIOPin()).destroy();
 
             // Remove the pin from the list
-            this.pins.remove(pin.getPinNumber());
+            this.pins.remove(pin.getGPIOPin());
         }
 
         return this;
@@ -211,7 +211,7 @@ public class GPIOController implements IGPIOController
                         String strPin = directories[ directories.length - 1 ].replaceAll("gpio", "");
 
                         try {
-                            this.addPin(new Pin(Integer.parseInt(strPin)));
+                            this.addPin(new Pin(Integer.parseInt(strPin), 0));
                         } catch(Exception e) {
                             this.logMessageIfPossible(System.err.toString());
                         }

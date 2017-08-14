@@ -28,18 +28,25 @@ public interface IPin extends ICanLog
     String getDirection();
 
     /**
+     * Get the pin's gpio number
+     *
+     * @return the pin's gpio number
+     */
+    int getGPIOPin();
+
+    /**
+     * Get the pin's number
+     *
+     * @return the pin's number
+     */
+    int getPin();
+
+    /**
      * Get the pin value
      *
      * @return the pin's value
      */
     String getValue();
-
-    /**
-     * Get the pin number
-     *
-     * @return the pin's number
-     */
-    int getPinNumber();
 
     /**
      * Export the pin on the system
@@ -121,12 +128,28 @@ public interface IPin extends ICanLog
     IPin setFiveVolts(boolean fiveVolts);
 
     /**
+     * Set the pin's gpio number
+     *
+     * @param pin the pin's gpio number
+     * @return
+     */
+    IPin setGPIOPin(int gpioPin);
+
+    /**
      * Set the ground state of the pin
      *
      * @param ground the pin's ground state
      * @return
      */
     IPin setGround(boolean ground);
+
+    /**
+     * Set the pin's number
+     *
+     * @param pin the pin's number
+     * @return
+     */
+    IPin setPin(int pin);
 
     /**
      * Set the three volts state of the pin

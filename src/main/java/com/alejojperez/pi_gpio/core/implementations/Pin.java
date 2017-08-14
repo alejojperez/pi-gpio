@@ -64,12 +64,19 @@ public class Pin implements IPin
     private int pin;
 
     /**
-     * The class constructor
-     *
-     * @param pinNumber
+     * The pin gpio number
      */
-    public Pin(int pinNumber) throws Exception
+    private int gpioPin;
+
+    /**
+     * Constructor
+     * @param gpioPin the gpio pin's number
+     * @param pinNumber the pin's number
+     * @throws Exception
+     */
+    public Pin(int gpioPin, int pinNumber) throws Exception
     {
+        this.gpioPin = gpioPin;
         this.pin = pinNumber;
 
         this.directionPath = (String) Utils.config("//system/GPIO/pin/paths/direction/text()", XPathConstants.STRING);
@@ -85,6 +92,7 @@ public class Pin implements IPin
      */
     public IPin destroy()
     {
+        String strGPIOPin = Integer.toString(this.gpioPin);
         String strPin = Integer.toString(this.pin);
 
         if(!this.isInitialized())
@@ -95,7 +103,7 @@ public class Pin implements IPin
         {
             try {
                 // Tell the system that the pin "x" is not going to be used any more
-                Files.write(Paths.get(this.unexportPath), strPin.getBytes());
+                Files.write(Paths.get(this.unexportPath), strGPIOPin.getBytes());
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
@@ -118,6 +126,7 @@ public class Pin implements IPin
      */
     public String getDirection()
     {
+        String strGPIOPin = Integer.toString(this.gpioPin);
         String strPin = Integer.toString(this.pin);
 
         if(!this.isInitialized()) {
@@ -127,7 +136,7 @@ public class Pin implements IPin
             {
             try {
                 // Set the direction of the pin
-                String direcPath = this.directionPath.replace(this.placeholderPath, strPin);
+                String direcPath = this.directionPath.replace(this.placeholderPath, strGPIOPin);
                 return new String(Files.readAllBytes(Paths.get(direcPath)));
 
             } catch(Exception e) {
@@ -141,8 +150,25 @@ public class Pin implements IPin
     /**
      * @inheritdoc
      */
+    public int getGPIOPin()
+    {
+        return this.gpioPin;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public int getPin()
+    {
+        return this.pin;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public String getValue()
     {
+        String strGPIOPin = Integer.toString(this.gpioPin);
         String strPin = Integer.toString(this.pin);
 
         if(!this.isInitialized()) {
@@ -152,7 +178,7 @@ public class Pin implements IPin
         {
             try {
                 // Set the direction of the pin
-                String valuePath = this.valuePath.replace(this.placeholderPath, strPin);
+                String valuePath = this.valuePath.replace(this.placeholderPath, strGPIOPin);
                 return new String(Files.readAllBytes(Paths.get(valuePath)));
 
             } catch(Exception e) {
@@ -166,16 +192,9 @@ public class Pin implements IPin
     /**
      * @inheritdoc
      */
-    public int getPinNumber()
-    {
-        return this.pin;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public IPin initialize()
     {
+        String strGPIOPin = Integer.toString(this.gpioPin);
         String strPin = Integer.toString(this.pin);
 
         if(this.isInitialized())
@@ -186,7 +205,7 @@ public class Pin implements IPin
         {
             try {
                 // Tell the system that the pin "x" is going to be used
-                Files.write(Paths.get(this.exportPath), strPin.getBytes());
+                Files.write(Paths.get(this.exportPath), strGPIOPin.getBytes());
 
             } catch(Exception e) {
                 this.logMessageIfPossible(e);
@@ -225,8 +244,8 @@ public class Pin implements IPin
      */
     public boolean isInitialized()
     {
-        String strPin = Integer.toString(this.pin);
-        String initPath = this.isInitializedPath.replace(this.placeholderPath, strPin);
+        String strGPIOPin = Integer.toString(this.gpioPin);
+        String initPath = this.isInitializedPath.replace(this.placeholderPath, strGPIOPin);
 
         return Files.isDirectory(Paths.get(initPath));
     }
@@ -274,18 +293,19 @@ public class Pin implements IPin
      */
     public IPin setDirection(String direction)
     {
+        String strGPIOPin = Integer.toString(this.gpioPin);
         String strPin = Integer.toString(this.pin);
 
         if(!this.isInitialized()) {
             this.logMessageIfPossible("The pin number " + strPin + " is not initialized; therefore, its direction can not be set.");
         }
-        else if(direction != Pin.GPIO_IN && direction != Pin.GPIO_OUT) {
+        else if(!direction.equals(Pin.GPIO_IN) && !direction.equals(Pin.GPIO_OUT)) {
             logMessageIfPossible("Sorry, the direction [" + direction + "] set for pin number " + strPin + " is not valid.");
         }
         else {
             try {
                 // Set the direction of the pin
-                String direcPath = this.directionPath.replace(this.placeholderPath, strPin);
+                String direcPath = this.directionPath.replace(this.placeholderPath, strGPIOPin);
                 Files.write(Paths.get(direcPath), direction.getBytes());
 
             } catch(Exception e) {
@@ -317,9 +337,29 @@ public class Pin implements IPin
     /**
      * @inheritdoc
      */
+    public IPin setGPIOPin(int gpioPin)
+    {
+        this.gpioPin = gpioPin;
+
+        return  this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public Pin setGround(boolean ground)
     {
         this.ground = ground;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public IPin setPin(int pin)
+    {
+        this.pin = pin;
+
         return this;
     }
 
@@ -337,6 +377,7 @@ public class Pin implements IPin
      */
     public IPin setValue(String value)
     {
+        String strGPIOPin = Integer.toString(this.gpioPin);
         String strPin = Integer.toString(this.pin);
 
         if(!this.isInitialized()) {
@@ -348,7 +389,7 @@ public class Pin implements IPin
         else {
             try {
                 // Set the value of the pin
-                String valPath = this.valuePath.replace(this.placeholderPath, strPin);
+                String valPath = this.valuePath.replace(this.placeholderPath, strGPIOPin);
                 Files.write(Paths.get(valPath), value.getBytes());
 
             } catch(Exception e) {

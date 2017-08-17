@@ -4,6 +4,7 @@
  */
 package com.alejojperez.pi_gpio.core.implementations;
 
+import com.alejojperez.pi_gpio.core.config.Configuration;
 import com.alejojperez.pi_gpio.core.contracts.ILogger;
 import com.alejojperez.pi_gpio.core.contracts.IPin;
 import com.alejojperez.pi_gpio.core.Utils;
@@ -79,12 +80,14 @@ public class Pin implements IPin
         this.gpioPin = gpioPin;
         this.pin = pinNumber;
 
-        this.directionPath = (String) Utils.config("//system/GPIO/pin/paths/direction/text()", XPathConstants.STRING);
-        this.exportPath = (String) Utils.config("//system/GPIO/pin/paths/export/text()", XPathConstants.STRING);
-        this.unexportPath = (String) Utils.config("//system/GPIO/pin/paths/unexport/text()", XPathConstants.STRING);
-        this.valuePath = (String) Utils.config("//system/GPIO/pin/paths/value/text()", XPathConstants.STRING);
-        this.isInitializedPath = (String) Utils.config("//system/GPIO/pin/paths/isInitialized/text()", XPathConstants.STRING);
-        this.placeholderPath = (String) Utils.config("//system/GPIO/pin/placeholder/text()", XPathConstants.STRING);
+        Configuration config = Utils.configuration();
+
+        this.directionPath = config.getGpio().getPaths().getDirection();
+        this.exportPath = config.getGpio().getPaths().getExport();
+        this.unexportPath = config.getGpio().getPaths().getUnexport();
+        this.valuePath = config.getGpio().getPaths().getValue();
+        this.isInitializedPath = config.getGpio().getPaths().getIsInitialized();
+        this.placeholderPath = config.getGpio().getPaths().getGeneralPath();
     }
 
     /**

@@ -4,6 +4,7 @@
  */
 package com.alejojperez.pi_gpio.core.implementations;
 
+import com.alejojperez.pi_gpio.core.config.Configuration;
 import com.alejojperez.pi_gpio.core.contracts.IFolderWatcher;
 import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
 import com.alejojperez.pi_gpio.core.contracts.ILogger;
@@ -51,7 +52,8 @@ public class GPIOController implements IGPIOController
      */
     private GPIOController()
     {
-        this.generalPath = (String) Utils.config("//system/GPIO/pin/paths/generalPath/text()", XPathConstants.STRING);
+        Configuration c = Utils.configuration();
+        this.generalPath = Utils.configuration().getGpio().getPaths().getGeneralPath();
     }
 
     /**

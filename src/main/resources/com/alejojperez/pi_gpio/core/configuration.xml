@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <system>
-        <GPIO>
-            <pin>
-                <placeholder>${PIN_NUMBER}$</placeholder>
-                <paths>
-                    <direction>/sys/class/gpio/gpio${PIN_NUMBER}$/direction</direction>
-                    <export>/sys/class/gpio/export</export>
-                    <unexport>/sys/class/gpio/unexport</unexport>
-                    <value>/sys/class/gpio/gpio${PIN_NUMBER}$/value</value>
-                    <isInitialized>/sys/class/gpio/gpio${PIN_NUMBER}$</isInitialized>
-                    <generalPath>/sys/class/gpio</generalPath>
-                </paths>
-            </pin>
-        </GPIO>
-    </system>
+    <GPIO>
+        <placeholder>${PIN_NUMBER}$</placeholder>
+        <paths>
+            <direction>/sys/class/gpio/gpio${PIN_NUMBER}$/direction</direction>
+            <export>/sys/class/gpio/export</export>
+            <unexport>/sys/class/gpio/unexport</unexport>
+            <value>/sys/class/gpio/gpio${PIN_NUMBER}$/value</value>
+            <isInitialized>/sys/class/gpio/gpio${PIN_NUMBER}$</isInitialized>
+            <generalPath>/sys/class/gpio</generalPath>
+        </paths>
+    </GPIO>
 </configuration>

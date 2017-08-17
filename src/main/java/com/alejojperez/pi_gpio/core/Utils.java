@@ -4,6 +4,9 @@
  */
 package com.alejojperez.pi_gpio.core;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,6 +15,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import com.alejojperez.pi_gpio.core.config.Configuration;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
@@ -21,47 +25,22 @@ public class Utils
     public static InputStream config;
 
     /**
-     * Returns a configuration value based on the XPtah expression
+     * Returns configuration
      *
-     * @param xPathExpression
-     * @param resultType
      * @return
      */
-    public static Object config(String xPathExpression, QName resultType)
+    public static Configuration configuration()
     {
-        return Utils.xmlValue(Utils.resolveInputStream(), xPathExpression, resultType);
-    }
-
-    /**
-     * Returns an xml value based on the XPtah expression
-     *
-     * @param xPathExpression
-     * @param resultType
-     * @return
-     */
-    public static Object xmlValue(InputStream filePath, String xPathExpression, QName resultType)
-    {
-        Object result;
-
         try
         {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true); // never forget this!
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(filePath);
+            JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 
-            XPathFactory xpathfactory = XPathFactory.newInstance();
-            XPath xpath = xpathfactory.newXPath();
-
-            XPathExpression expr = xpath.compile(xPathExpression);
-            result = expr.evaluate(doc, resultType);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            return (Configuration) jaxbUnmarshaller.unmarshal(Utils.resolveInputStream());
         }
-        catch(Exception e)
-        {
-            result = null;
-        }
+        catch (JAXBException ignore) { }
 
-        return result;
+        return null;
     }
 
     /**

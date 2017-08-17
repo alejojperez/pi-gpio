@@ -6,6 +6,7 @@ package com.alejojperez.pi_gpio.core;
 
 import com.alejojperez.pi_gpio.core.contracts.IFileLogger;
 import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
+import com.alejojperez.pi_gpio.core.contracts.IPin;
 import com.alejojperez.pi_gpio.core.implementations.FileLogger;
 import com.alejojperez.pi_gpio.core.implementations.FolderWatcher;
 import com.alejojperez.pi_gpio.core.implementations.GPIOController;

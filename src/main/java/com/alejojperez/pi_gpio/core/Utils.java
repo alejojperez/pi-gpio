@@ -14,9 +14,11 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 
+import java.io.InputStream;
+
 public class Utils
 {
-    public static String configPath = "./target/classes/configuration.xml";
+    public static InputStream config;
 
     /**
      * Returns a configuration value based on the XPtah expression
@@ -27,18 +29,7 @@ public class Utils
      */
     public static Object config(String xPathExpression, QName resultType)
     {
-        return Utils.xmlValue(Utils.configPath, xPathExpression, resultType);
-    }
-
-    /**
-     * Check if a pin number is valid
-     *
-     * @param pinNumber The pin number to check
-     * @return boolean
-     */
-    public static boolean validPinNumber(int pinNumber)
-    {
-        return pinNumber >= 0 && pinNumber <=40;
+        return Utils.xmlValue(Utils.resolveInputStream(), xPathExpression, resultType);
     }
 
     /**
@@ -48,7 +39,7 @@ public class Utils
      * @param resultType
      * @return
      */
-    public static Object xmlValue(String filePath, String xPathExpression, QName resultType)
+    public static Object xmlValue(InputStream filePath, String xPathExpression, QName resultType)
     {
         Object result;
 
@@ -71,5 +62,16 @@ public class Utils
         }
 
         return result;
+    }
+
+    /**
+     * @return
+     */
+    protected static InputStream resolveInputStream()
+    {
+        if(Utils.config != null)
+            return Utils.config;
+
+        return Utils.class.getResourceAsStream("configuration.xml");
     }
 }

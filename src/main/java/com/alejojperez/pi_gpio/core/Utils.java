@@ -7,22 +7,16 @@ package com.alejojperez.pi_gpio.core;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
 import com.alejojperez.pi_gpio.core.config.Configuration;
-import org.w3c.dom.Document;
+import com.alejojperez.pi_gpio.core.contracts.ResolveConfigurationInputStreamCallback;
 
-import java.io.InputStream;
+import java.io.*;
 
 public class Utils
 {
     public static InputStream config;
+
+    public static ResolveConfigurationInputStreamCallback callback;
 
     /**
      * Returns configuration
@@ -48,9 +42,13 @@ public class Utils
      */
     protected static InputStream resolveInputStream()
     {
-        if(Utils.config != null)
-            return Utils.config;
+        if(Utils.callback != null)
+            Utils.callback.resolve();
+        else
+            Utils.callback = () -> Utils.config = Utils.class.getResourceAsStream("configuration.xml");
 
-        return Utils.class.getResourceAsStream("configuration.xml");
+        Utils.callback.resolve();
+
+        return Utils.config;
     }
 }

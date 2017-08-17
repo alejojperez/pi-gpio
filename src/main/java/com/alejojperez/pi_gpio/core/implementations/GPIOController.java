@@ -4,7 +4,6 @@
  */
 package com.alejojperez.pi_gpio.core.implementations;
 
-import com.alejojperez.pi_gpio.core.config.Configuration;
 import com.alejojperez.pi_gpio.core.contracts.IFolderWatcher;
 import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
 import com.alejojperez.pi_gpio.core.contracts.ILogger;
@@ -13,7 +12,6 @@ import com.alejojperez.pi_gpio.core.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
-import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,7 +50,6 @@ public class GPIOController implements IGPIOController
      */
     private GPIOController()
     {
-        Configuration c = Utils.configuration();
         this.generalPath = Utils.configuration().getGpio().getPaths().getGeneralPath();
     }
 

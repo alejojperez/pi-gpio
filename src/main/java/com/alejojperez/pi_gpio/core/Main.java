@@ -6,11 +6,9 @@ package com.alejojperez.pi_gpio.core;
 
 import com.alejojperez.pi_gpio.core.contracts.IFileLogger;
 import com.alejojperez.pi_gpio.core.contracts.IGPIOController;
-import com.alejojperez.pi_gpio.core.contracts.IPin;
 import com.alejojperez.pi_gpio.core.implementations.FileLogger;
 import com.alejojperez.pi_gpio.core.implementations.FolderWatcher;
 import com.alejojperez.pi_gpio.core.implementations.GPIOController;
-import com.alejojperez.pi_gpio.core.implementations.Pin;
 
 public class Main
 {
@@ -22,7 +20,6 @@ public class Main
         controller.registerLogger(logger);
 
         try {
-
 //            controller.get("red-pin").setValue(Pin.GPIO_ON);
 //            Thread.sleep(3000);
 //            controller.get("red-pin").setValue(Pin.GPIO_OFF);
@@ -35,7 +32,7 @@ public class Main
 //            Thread.sleep(3000);
 //            controller.get("yellow-pin").setValue(Pin.GPIO_OFF);
 
-            controller.flushPins();
+//            controller.flushPins();
 
         } catch(Exception e) {
             e.printStackTrace();

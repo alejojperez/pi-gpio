@@ -8,12 +8,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import com.alejojperez.pi_gpio.core.config.Configuration;
+import com.alejojperez.pi_gpio.core.contracts.ResolveConfigurationInputStreamCallback;
 
 import java.io.*;
 
 public class Utils
 {
-    public static String config;
+    public static ResolveConfigurationInputStreamCallback callback;
 
     /**
      * Returns configuration
@@ -27,7 +28,7 @@ public class Utils
             JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return (Configuration) jaxbUnmarshaller.unmarshal(new File(Utils.resolveInputStream()));
+            return (Configuration) jaxbUnmarshaller.unmarshal(Utils.resolveInputStream());
         }
         catch (JAXBException ignore) { }
 
@@ -37,11 +38,11 @@ public class Utils
     /**
      * @return
      */
-    protected static String resolveInputStream()
+    protected static InputStream resolveInputStream()
     {
-        if(Utils.config == null)
-            Utils.config = Utils.class.getResource("configuration.xml").getPath();
+        if(Utils.callback == null)
+            Utils.callback = () -> Utils.class.getResourceAsStream("configuration.xml");
 
-        return Utils.config;
+        return Utils.callback.resolve();
     }
 }

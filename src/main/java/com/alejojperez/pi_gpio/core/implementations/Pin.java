@@ -87,7 +87,7 @@ public class Pin implements IPin
         this.unexportPath = config.getGpio().getPaths().getUnexport();
         this.valuePath = config.getGpio().getPaths().getValue();
         this.isInitializedPath = config.getGpio().getPaths().getIsInitialized();
-        this.placeholderPath = config.getGpio().getPaths().getGeneralPath();
+        this.placeholderPath = config.getGpio().getPlaceholder();
     }
 
     /**

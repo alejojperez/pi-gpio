@@ -8,7 +8,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import com.alejojperez.pi_gpio.core.config.Configuration;
-import com.alejojperez.pi_gpio.core.contracts.ResolveConfigurationInputStreamCallback;
 
 import java.io.*;
 

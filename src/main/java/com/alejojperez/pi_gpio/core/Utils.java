@@ -45,7 +45,7 @@ public class Utils
         if(Utils.callback == null)
             Utils.callback = () -> Utils.config = Utils.class.getResourceAsStream("configuration.xml");
 
-        Utils.callback.resolve();
+        Utils.config = Utils.callback.resolve();
 
         return Utils.config;
     }

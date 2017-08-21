@@ -14,9 +14,7 @@ import java.io.*;
 
 public class Utils
 {
-    public static InputStream config;
-
-    public static ResolveConfigurationInputStreamCallback callback;
+    public static String config;
 
     /**
      * Returns configuration
@@ -30,7 +28,7 @@ public class Utils
             JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return (Configuration) jaxbUnmarshaller.unmarshal(Utils.resolveInputStream());
+            return (Configuration) jaxbUnmarshaller.unmarshal(new File(Utils.resolveInputStream()));
         }
         catch (JAXBException ignore) { }
 
@@ -40,12 +38,10 @@ public class Utils
     /**
      * @return
      */
-    protected static InputStream resolveInputStream()
+    protected static String resolveInputStream()
     {
-        if(Utils.callback == null)
-            Utils.callback = () -> Utils.config = Utils.class.getResourceAsStream("configuration.xml");
-
-        Utils.config = Utils.callback.resolve();
+        if(Utils.config == null)
+            Utils.config = Utils.class.getResource("configuration.xml").getPath();
 
         return Utils.config;
     }

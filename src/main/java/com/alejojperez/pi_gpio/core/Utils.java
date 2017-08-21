@@ -42,9 +42,7 @@ public class Utils
      */
     protected static InputStream resolveInputStream()
     {
-        if(Utils.callback != null)
-            Utils.callback.resolve();
-        else
+        if(Utils.callback == null)
             Utils.callback = () -> Utils.config = Utils.class.getResourceAsStream("configuration.xml");
 
         Utils.callback.resolve();

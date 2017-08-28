@@ -168,12 +168,17 @@ public class GPIOController implements IGPIOController
         return this;
     }
 
+    public boolean isFolderWatcherRunning()
+    {
+        return this.folderWatcher != null && this.folderWatcher.getExecutor() != null && !this.folderWatcher.getExecutor().isShutdown();
+    }
+
     /**
      * @inheritdoc
      */
     public void startFolderWatcher()
     {
-        if(this.folderWatcher != null && this.folderWatcher.getExecutor() != null && !this.folderWatcher.getExecutor().isShutdown())
+        if(this.isFolderWatcherRunning())
         {
             this.logMessageIfPossible("The folder watch cannot we started because it is already running.");
             return;
@@ -192,7 +197,7 @@ public class GPIOController implements IGPIOController
      */
     public void stopFolderWatcher()
     {
-        if(this.folderWatcher == null)
+        if(!this.isFolderWatcherRunning())
         {
             this.logMessageIfPossible("The folder watch cannot we stopped because it is not running.");
             return;

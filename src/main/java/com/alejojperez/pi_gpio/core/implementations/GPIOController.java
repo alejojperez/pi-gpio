@@ -147,6 +147,9 @@ public class GPIOController implements IGPIOController
         return instance;
     }
 
+    /**
+     * @inheritdoc
+     */
     public void loadGeneralPath()
     {
         this.generalPath = Utils.configuration().getGpio().getPaths().getGeneralPath();

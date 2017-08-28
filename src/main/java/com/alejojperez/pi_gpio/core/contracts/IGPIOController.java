@@ -57,6 +57,11 @@ public interface IGPIOController extends ICanLog
     ObservableMap<Integer, IPin> getPins();
 
     /**
+     * Reload the folder watcher general path
+     */
+    void loadGeneralPath();
+
+    /**
      * Get if the folder watcher is running
      *
      * @return

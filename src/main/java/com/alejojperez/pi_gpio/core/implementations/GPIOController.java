@@ -50,7 +50,7 @@ public class GPIOController implements IGPIOController
      */
     private GPIOController()
     {
-        this.generalPath = Utils.configuration().getGpio().getPaths().getGeneralPath();
+        this.loadGeneralPath();
     }
 
     /**
@@ -145,6 +145,11 @@ public class GPIOController implements IGPIOController
              instance = new GPIOController();
 
         return instance;
+    }
+
+    public void loadGeneralPath()
+    {
+        this.generalPath = Utils.configuration().getGpio().getPaths().getGeneralPath();
     }
 
     /**
